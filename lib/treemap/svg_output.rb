@@ -120,7 +120,7 @@ class Treemap::SvgOutput < Treemap::OutputBase
         svg
     end
     
-    ef to_css(node)
+    def to_css(node)
         bounds = self.bounds
     
         @layout.process(node, bounds)
