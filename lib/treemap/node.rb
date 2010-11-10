@@ -10,7 +10,7 @@
 #
 #
 
-require "md5"
+require "digest/md5"
 
 module Treemap
     #
@@ -37,7 +37,7 @@ module Treemap
     #
     #
     class Treemap::Node
-        attr_accessor :id, :label, :color, :size, :bounds, :parent, :object
+        attr_accessor :id, :label, :meta, :link, :color, :size, :bounds, :parent, :object
         attr_reader :children
 
         #
@@ -63,7 +63,10 @@ module Treemap
             @id = opts[:id]
             @object = opts[:object]
             @children = []
-
+            @meta = opts[:meta]
+            @link = opts[:link]
+            
+            
             if(@id.nil?)
                 make_id
             end
@@ -135,7 +138,7 @@ module Treemap
     private
         def make_id
             #XXX prob should change this. Create a better way to generate unique id's
-            @id = MD5.new([self.label, rand(100000000)].join("-")).hexdigest
+            @id = Digest::MD5.new([self.label, rand(100000000)].join("-")).hexdigest
         end
     end
 end

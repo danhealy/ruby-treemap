@@ -26,7 +26,15 @@ class Treemap::SvgOutput < Treemap::OutputBase
     def node_label(node)
         CGI.escapeHTML(node.label)
     end
-
+    
+    def node_meta(node)
+      node.meta
+    end
+    
+    def node_link(node)
+      CGI.escapeHTML(node.link)
+    end
+    
     def draw_node_body(node)
         draw_label(node)
     end
@@ -111,4 +119,83 @@ class Treemap::SvgOutput < Treemap::OutputBase
 
         svg
     end
+    
+    ef to_css(node)
+        bounds = self.bounds
+    
+        @layout.process(node, bounds)
+    
+        draw_map_css(node)
+    end
+    
+    def draw_map_css(node)
+        css = "<html><head><link href=\"/stylesheets/app.css\" media=\"all\" rel=\"stylesheet\" type=\"text/css\" /><script language='javascript' src='/javascripts/mootools-1.2-core-yc.js'></script><script language='javascript' src='/javascripts/mootools-1.2-more.js'></script><script language='javascript' src='/javascripts/my_tooltips.js'></script></head>\n<body>"
+        css += "<div id=\"map\" style=\"position:absolute; top:0px; left:0px; width:" + (node.bounds.width).to_s + "; height:" + (node.bounds.height).to_s + ";\">\n"
+        css += draw_node_css(node)
+        css += "</div>"
+        css
+    end
+    
+    def draw_node_css(node)
+        return "" if node.bounds.nil?
+    
+        css = ""
+        css += "<div"
+        css += " class=\"RegTips\""
+        css += " id=\"rect-" + node.id.to_s + "\""
+        css += " style=\"position:absolute;"
+        css += " left:" + node.bounds.x1.to_s + "px;"
+        css += " top:" + node.bounds.y1.to_s + "px;"
+        css += " width:" + node.bounds.width.to_s + "px;"
+        css += " height:" + node.bounds.height.to_s + "px;"
+        
+        css += " background-color:" + node_color(node) + ";"
+        css += " border:1px solid black;"
+        css += " color:white;"
+        css += "\""
+        css += " >\n"
+    
+        css += draw_node_body_css(node)
+        css += "</div>\n"
+    
+        if(!node.children.nil? and node.children.size > 0)
+            node.children.each do |c|
+                css += draw_node_css(c)
+            end
+        end
+    
+        css
+    end
+    
+    
+    def draw_node_body_css(node)
+        draw_label_css(node)
+    end
+    
+    def draw_label_css(node)
+        # center label in box
+        narea = 1.0 + (node.bounds.width * node.bounds.height)
+        totarea = 800.0 * 600.0
+        
+        fsize = 12 + (72*(narea/totarea)).to_i
+        label = ""
+        label += "<p style=\"text-align: center; font-size:#{fsize}px; margin:#{(node.bounds.height-fsize)/2}px 0px\">"
+        #label += " x=\"" + (node.bounds.x1 + node.bounds.width / 2).to_s + "\""
+        #label += " y=\"" + (node.bounds.y1 + node.bounds.height / 2).to_s + "\">"
+        unless node_link(node).nil?
+          label += "<a href=\"/history_graph/" + node_link(node) + "\" target=\"_parent\">"
+          label += node_label(node)
+          label += "</a>"
+        end
+        label += "</p>\n"
+        
+        label += "<span id=\"meta\" style=\"display:none;\">"
+        unless node_meta(node).nil?
+          label += node_meta(node)
+        end
+        label += "</span>\n"
+        
+        label
+    end
+    
 end
