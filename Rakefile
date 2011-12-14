@@ -12,9 +12,6 @@ require 'treemap'
 CLEAN.include FileList['test/*.html', 'test/*.png', 'test/*.svg']
 CLEAN.include 'docs'
 
-PKG_NAME      = 'ruby-treemap'
-PKG_VERSION   = Treemap::VERSION
-
 desc 'list available tasks'
 task :default do
     puts "Run 'rake --tasks' for the list of available tasks"
@@ -42,30 +39,3 @@ Rake::TestTask.new do |t|
     t.verbose = true
 end
 
-spec = Gem::Specification.new do |s|
-    s.platform = Gem::Platform::RUBY
-
-    s.name = PKG_NAME
-    s.summary = "Treemap visualization in ruby"
-    s.description = %q{Treemap visualization in ruby}
-    s.version = PKG_VERSION
-    s.author = "Andrew Bruno"
-    s.email = "aeb@qnot.org"
-    s.homepage = "http://rubytreemap.rubyforge.org/"
-
-    s.has_rdoc = true
-    s.extra_rdoc_files = [ "README", "EXAMPLES" ]
-    s.rdoc_options = [ "--main", "README" ]
-    s.requirements << 'none'
-
-    s.require_path = 'lib'
-    s.autorequire = 'treemap'
-
-    s.files = [ "Rakefile", "TODO", "EXAMPLES", "README", "ChangeLog", "COPYING"]
-    s.files = s.files + Dir.glob( "lib/**/*" ).delete_if { |item| item.include?( "\.svn" ) }
-    s.files = s.files + Dir.glob( "test/**/*" ).delete_if { |item| item.include?( "\.svn" ) }
-end
-
-Rake::GemPackageTask.new(spec) do |p|
-    p.need_tar = true
-end
